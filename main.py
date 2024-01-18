@@ -4,6 +4,7 @@ from random import randint as r
 time = pygame.time.Clock()
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
+pygame.display.set_caption("Sceletons vs Archer")
 icon = pygame.image.load('images/icon.png')
 
 player = pygame.image.load('images/1.png')
