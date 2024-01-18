@@ -1,11 +1,15 @@
 import pygame
 from random import randint as r
 
+# Настройка окна игры и загрузка изображений:
+
 time = pygame.time.Clock()
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
 pygame.display.set_caption("Sceletons vs Archer")
 icon = pygame.image.load('images/icon.png')
+
+# ... (загрузка изображений персонажей, анимаций и пр.)
 
 player = pygame.image.load('images/1.png')
 walk_left = [
@@ -111,7 +115,9 @@ intro_screen = True
 
 running = True
 paused = False
+# основной цикл
 while running:
+    # начальный экран
     while intro_screen:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -141,7 +147,7 @@ while running:
     screen.blit(hearts[heart_anim_count], (10, 10))
     screen.blit(labal_points, (600, 10))
 
-    if player_life <= 0:
+    if player_life <= 0:  # проигрыш
         screen.blit(bg_lose, (0, 0))
         screen.blit(labal_lose, (200, 200))
         screen.blit(labal_restart, (0, 300))
@@ -164,7 +170,7 @@ while running:
     player_rect = player.get_rect(topleft=(player_x, player_y))
 
     keys = pygame.key.get_pressed()
-
+    # ходьба
     if keys[pygame.K_a] and player_x > 50:
         screen.blit(walk_left[player_anim_count], (player_x, player_y))
         player_x -= player_speed
@@ -179,13 +185,14 @@ while running:
             bg_x = 0
     else:
         screen.blit(player, (player_x, player_y))
-
+    # стрельба
     if keys[pygame.K_e]:
         current_time = pygame.time.get_ticks()
 
         if current_time - last_shot_time >= fire_rate:
             fire_list.append(fire[fire_anim_count].get_rect(topleft=(player_x + 80, player_y + 60)))
             last_shot_time = current_time
+    # взаимодействие стрелы со скелетом
     if fire_list:
         for (i, fire_idx) in enumerate(fire_list):
             screen.blit(fire[fire_anim_count], fire_idx)
@@ -196,7 +203,7 @@ while running:
                     if fire_idx.colliderect(sceleton_idx):
                         fire_list.pop(i)
                         sceletons_list.pop(i2)
-
+    # прыжок
     if not is_jump:
         if keys[pygame.K_SPACE]:
             is_jump = True
@@ -233,9 +240,9 @@ while running:
         money_anim_count = 0
     else:
         money_anim_count += 1
-
+    # спавн зомби
     check = r(0, 60)
-    if check == 2 and sceletons_rect_x > 0:  # Check that skeletons are spawned on the right side
+    if check == 2 and sceletons_rect_x > 0:
         sceletons_list.append(sceletons[sceletons_anim_count].get_rect(topleft=(sceletons_rect_x, 200)))
         sceletons_rect_x -= 4
 
@@ -247,7 +254,7 @@ while running:
                 player_life -= 1
                 player_x = 100
                 sceletons_list.pop(0)
-
+    # Спавн монетки
     check_money = r(10, 750)
     check_time = r(0, 100)
     if money_count > 0:
@@ -265,9 +272,9 @@ while running:
 
     pygame.display.update()
     victory_condition = 30
-
+    # экран победы
     if points >= victory_condition:
-        screen.fill((0, 0, 0))  # Fill the screen with a black background
+        screen.fill((0, 0, 0))
         screen.blit(labal_victory, (200, 200))
         screen.blit(labal_restart, (0, 300))
         pygame.display.update()
@@ -284,7 +291,7 @@ while running:
                 points = 0
                 game_over = False
                 break
-
+    # кнопка перезапуска игры
     keys = pygame.key.get_pressed()
     if keys[pygame.K_r]:
         player_life = 3
