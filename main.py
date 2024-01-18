@@ -86,7 +86,8 @@ bg = pygame.image.load('images/bg.jpg')
 bg_x = 0
 bg_lose = pygame.image.load('images/bg_lose.png')
 labal_font = pygame.font.Font('font/Old-Soviet.otf', 40)
-labal_lose = labal_font.render('Game Over!', False, (193, 196, 199))
+labal_victory = labal_font.render('Вы выйграли!', False, (193, 196, 199))
+labal_lose = labal_font.render('Вы проиграли', False, (193, 196, 199))
 labal_restart = labal_font.render('Нажмите R чтобы начать занаво', False, (193, 196, 199))
 hearts = [
     pygame.image.load('images/heart/1.png'),
@@ -108,6 +109,7 @@ game_over = False
 intro_screen = True
 
 running = True
+paused = False
 while running:
     while intro_screen:
         for event in pygame.event.get():
@@ -116,18 +118,14 @@ while running:
                 intro_screen = False
                 pygame.quit()
 
-
         screen.fill((0, 0, 0))
-
 
         font = pygame.font.Font(None, 36)
         play_text = font.render('Играть', True, (255, 255, 255))
         play_rect = play_text.get_rect(center=(400, 200))
         screen.blit(play_text, play_rect)
 
-
         pygame.display.update()
-
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -236,8 +234,7 @@ while running:
         money_anim_count += 1
 
     check = r(0, 60)
-    if check == 2:
-        sceletons_list.append(sceletons[sceletons_anim_count].get_rect(topleft=(-50, 200)))
+    if check == 2 and sceletons_rect_x > 0:  # Check that skeletons are spawned on the right side
         sceletons_list.append(sceletons[sceletons_anim_count].get_rect(topleft=(sceletons_rect_x, 200)))
         sceletons_rect_x -= 4
 
@@ -266,6 +263,26 @@ while running:
                 points += 1
 
     pygame.display.update()
+    victory_condition = 30
+
+    if points >= victory_condition:
+        screen.fill((0, 0, 0))  # Fill the screen with a black background
+        screen.blit(labal_victory, (200, 200))
+        screen.blit(labal_restart, (0, 300))
+        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_r]:
+                player_life = 3
+                player_x = 120
+                player_y = 200
+                points = 0
+                game_over = False
+                break
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_r]:
